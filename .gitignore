@@ -1,3 +1,9 @@
+#project
+assets/
+output/
+.venv
+api_usage.json
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
