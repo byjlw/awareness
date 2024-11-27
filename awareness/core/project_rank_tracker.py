@@ -23,11 +23,13 @@ class ProjectRankTracker(GoogleSearchTracker):
         for page in range(pages_needed):
             start_index = (page * 10) + 1
             
+            # Calculate remaining items needed
+            remaining = num_results - len(all_items)
             params = {
                 'key': self.api_key,
                 'cx': self.search_engine_id,
                 'q': term,
-                'num': 10,
+                'num': min(10, remaining),  # Request only what we need
                 'start': start_index
             }
             
@@ -41,8 +43,10 @@ class ProjectRankTracker(GoogleSearchTracker):
                 if total_results == 0 and 'searchInformation' in data:
                     total_results = int(data['searchInformation']['totalResults'])
             
-            # Only break if we've reached the requested number of results
-            if len(all_items) >= num_results:
+            # Check if we found all projects or reached the requested number
+            temp_data = {'items': all_items}
+            project_ranks = self._find_project_ranks(temp_data)
+            if all(rank is not None for rank in project_ranks.values()) or len(all_items) >= num_results:
                 break
                 
             time.sleep(1)
@@ -90,7 +94,8 @@ class ProjectRankTracker(GoogleSearchTracker):
             print(f"\nWarning: Maximum possible API queries: {total_queries}")
             print(f"Free queries remaining today: {remaining_free}")
             print(f"Maximum potential cost: ${paid_queries * 0.005:.2f}")
-            if input("Continue? (y/n): ").lower() != 'y':
+            # Skip confirmation in test mode
+            if show_progress and input("Continue? (y/n): ").lower() != 'y':
                 return None
 
         for term in terms:
