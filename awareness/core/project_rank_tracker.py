@@ -23,11 +23,13 @@ class ProjectRankTracker(GoogleSearchTracker):
         for page in range(pages_needed):
             start_index = (page * 10) + 1
             
+            # Calculate remaining items needed
+            remaining = num_results - len(all_items)
             params = {
                 'key': self.api_key,
                 'cx': self.search_engine_id,
                 'q': term,
-                'num': 10,
+                'num': min(10, remaining),  # Request only what we need
                 'start': start_index
             }
             
@@ -41,16 +43,17 @@ class ProjectRankTracker(GoogleSearchTracker):
                 if total_results == 0 and 'searchInformation' in data:
                     total_results = int(data['searchInformation']['totalResults'])
             
-            # Check if we found all projects
+            # Check if we found all projects or reached the requested number
             temp_data = {'items': all_items}
             project_ranks = self._find_project_ranks(temp_data)
-            if all(rank is not None for rank in project_ranks.values()):
+            if all(rank is not None for rank in project_ranks.values()) or len(all_items) >= num_results:
                 break
                 
             time.sleep(1)
         
+        # Create a new dictionary with limited results
         return {
-            'items': all_items,
+            'items': all_items[:num_results],  # Slice before returning
             'searchInformation': {
                 'totalResults': str(total_results)
             }
@@ -63,7 +66,7 @@ class ProjectRankTracker(GoogleSearchTracker):
         if 'items' not in search_data:
             return project_ranks
 
-        for idx, item in enumerate(search_data['items'], 1):
+        for idx, item in enumerate(search_data['items']):
             content = (
                 item.get('title', '') + ' ' + 
                 item.get('snippet', '') + ' ' +
@@ -72,7 +75,9 @@ class ProjectRankTracker(GoogleSearchTracker):
             
             for project in self.projects:
                 if project.lower() in content and project_ranks[project] is None:
-                    project_ranks[project] = idx
+                    # Calculate actual rank based on item's position
+                    actual_rank = idx + 1
+                    project_ranks[project] = actual_rank
                     
         return project_ranks
 
@@ -89,7 +94,8 @@ class ProjectRankTracker(GoogleSearchTracker):
             print(f"\nWarning: Maximum possible API queries: {total_queries}")
             print(f"Free queries remaining today: {remaining_free}")
             print(f"Maximum potential cost: ${paid_queries * 0.005:.2f}")
-            if input("Continue? (y/n): ").lower() != 'y':
+            # Skip confirmation in test mode
+            if show_progress and input("Continue? (y/n): ").lower() != 'y':
                 return None
 
         for term in terms:
