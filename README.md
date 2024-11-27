@@ -195,7 +195,7 @@ Note: `null` indicates the project was not found in the searched results.
 - Charts directory (when using generate_charts.py)
 
 ## Generating Charts
-
+![Sample Chart](chart-sample.png "Chart for number of results by project")
 The toolkit includes a script to generate visual charts from the JSON output files. To use it, you'll need additional Python packages:
 
 ```bash
