@@ -52,7 +52,7 @@ class ProjectRankTracker(GoogleSearchTracker):
         return {
             'items': all_items,
             'searchInformation': {
-                'totalResults': total_results
+                'totalResults': str(total_results)
             }
         }
 
