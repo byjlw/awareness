@@ -9,6 +9,11 @@ setup(
         "pyyaml>=6.0.1",
         "matplotlib>=3.7.0",
     ],
+    entry_points={
+        'console_scripts': [
+            'awareness=awareness_cli:main',
+        ],
+    },
     extras_require={
         "dev": [
             "pytest>=7.4.0",

@@ -41,28 +41,32 @@ pip install requests pyyaml
 
 ## Usage
 
-### Basic Search Results Counter
+### Command Line Interface
+
+The toolkit provides a unified command-line interface with three main commands: `search`, `rank`, and `charts`.
+
+#### Basic Search Results Counter
 
 Search for specific terms:
 ```bash
-python search_tracker.py --key YOUR_API_KEY --cx YOUR_SEARCH_ENGINE_ID -t "term1" "term2" "term3"
+awareness search --key YOUR_API_KEY --cx YOUR_SEARCH_ENGINE_ID -t "term1" "term2" "term3"
 ```
 
 Search using terms from a file:
 ```bash
-python search_tracker.py --key YOUR_API_KEY --cx YOUR_SEARCH_ENGINE_ID -f terms.txt
+awareness search --key YOUR_API_KEY --cx YOUR_SEARCH_ENGINE_ID -f terms.txt
 ```
 
 Save results to a JSON file:
 ```bash
-python search_tracker.py --key YOUR_API_KEY --cx YOUR_SEARCH_ENGINE_ID -t "term1" "term2" -o results.json
+awareness search --key YOUR_API_KEY --cx YOUR_SEARCH_ENGINE_ID -t "term1" "term2" -o results.json
 ```
 
-### Project Ranking Tracker
+#### Project Ranking Tracker
 
 Track project rankings for specific terms:
 ```bash
-python project_rank_cli.py --key YOUR_API_KEY --cx YOUR_SEARCH_ENGINE_ID \
+awareness rank --key YOUR_API_KEY --cx YOUR_SEARCH_ENGINE_ID \
     --projects "project1" "project2" \
     -t "search term1" "search term2" \
     -o rankings.json
@@ -70,20 +74,32 @@ python project_rank_cli.py --key YOUR_API_KEY --cx YOUR_SEARCH_ENGINE_ID \
 
 Track project rankings using terms from a file:
 ```bash
-python project_rank_cli.py --key YOUR_API_KEY --cx YOUR_SEARCH_ENGINE_ID \
+awareness rank --key YOUR_API_KEY --cx YOUR_SEARCH_ENGINE_ID \
     --projects "project1" "project2" \
     -f terms.json \
     --num-results 100 \
     -o rankings.json
 ```
 
-### Check API Usage
+#### Generate Charts
+
+Generate charts from JSON results in the default directories:
+```bash
+awareness charts
+```
+
+Generate charts with custom directories:
+```bash
+awareness charts --input-dir path/to/json/files --output-dir path/to/charts
+```
+
+#### Check API Usage
 
 View remaining free queries and usage status:
 ```bash
-python search_tracker.py --key YOUR_API_KEY --cx YOUR_SEARCH_ENGINE_ID --usage
+awareness search --key YOUR_API_KEY --cx YOUR_SEARCH_ENGINE_ID --usage
 # or
-python project_rank_cli.py --key YOUR_API_KEY --cx YOUR_SEARCH_ENGINE_ID --usage
+awareness rank --key YOUR_API_KEY --cx YOUR_SEARCH_ENGINE_ID --usage
 ```
 
 ## Input File Formats
