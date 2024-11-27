@@ -192,6 +192,40 @@ Note: `null` indicates the project was not found in the searched results.
 
 - `api_usage.json`: Tracks daily API usage
 - Output JSON file (if specified with `-o/--output`)
+- Charts directory (when using generate_charts.py)
+
+## Generating Charts
+
+The toolkit includes a script to generate visual charts from the JSON output files. To use it, you'll need additional Python packages:
+
+```bash
+pip install matplotlib
+```
+
+### Usage
+
+Generate charts from JSON files in the default output directory:
+```bash
+python generate_charts.py
+```
+
+Specify custom input and output directories:
+```bash
+python generate_charts.py --input-dir path/to/json/files --output-dir path/to/charts
+```
+
+### Generated Charts
+
+The script generates two types of charts:
+
+1. Search Results Count Charts
+   - Bar charts showing the number of results for each search term
+   - One chart per JSON file containing basic search results
+
+2. Project Ranking Charts
+   - Bar charts showing the ranking position of each project
+   - One chart per search term in each JSON file containing project rankings
+   - Lower rank numbers (higher bars) indicate better visibility
 
 ## Error Handling
 
@@ -212,4 +246,31 @@ The toolkit handles common errors including:
 - Project ranking searches analyze title, snippet, and URL of each result
 - Maximum of 100 results can be checked per term
 - Early exit feature saves API calls by stopping once all projects are found
+
+## Running Tests
+
+The project uses pytest for testing. To run the tests:
+
+1. Install the package in development mode with test dependencies:
+```bash
+pip install -e ".[dev]"
+```
+
+Alternatively, you can install just the test dependencies if you don't want to install the package:
+```bash
+pip install -r requirements-dev.txt
+```
+
+2. Run the tests:
+```bash
+pytest
+```
+
+This will run all tests in the `tests` directory and display the results with verbose output. The test suite includes:
+- Unit tests for chart generation functionality
+- Verification of JSON file loading
+- Chart output validation
+- API usage file handling
+
+The tests are automatically run on GitHub Actions for Python versions 3.7 through 3.12 whenever code is pushed to the main branch or a pull request is created.
 
