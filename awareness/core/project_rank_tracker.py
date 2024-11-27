@@ -41,16 +41,15 @@ class ProjectRankTracker(GoogleSearchTracker):
                 if total_results == 0 and 'searchInformation' in data:
                     total_results = int(data['searchInformation']['totalResults'])
             
-            # Check if we found all projects
-            temp_data = {'items': all_items}
-            project_ranks = self._find_project_ranks(temp_data)
-            if all(rank is not None for rank in project_ranks.values()):
+            # Only break if we've reached the requested number of results
+            if len(all_items) >= num_results:
                 break
                 
             time.sleep(1)
         
+        # Create a new dictionary with limited results
         return {
-            'items': all_items,
+            'items': all_items[:num_results],  # Slice before returning
             'searchInformation': {
                 'totalResults': str(total_results)
             }
@@ -63,7 +62,7 @@ class ProjectRankTracker(GoogleSearchTracker):
         if 'items' not in search_data:
             return project_ranks
 
-        for idx, item in enumerate(search_data['items'], 1):
+        for idx, item in enumerate(search_data['items']):
             content = (
                 item.get('title', '') + ' ' + 
                 item.get('snippet', '') + ' ' +
@@ -72,7 +71,9 @@ class ProjectRankTracker(GoogleSearchTracker):
             
             for project in self.projects:
                 if project.lower() in content and project_ranks[project] is None:
-                    project_ranks[project] = idx
+                    # Calculate actual rank based on item's position
+                    actual_rank = idx + 1
+                    project_ranks[project] = actual_rank
                     
         return project_ranks
 
