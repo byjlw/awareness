@@ -6,10 +6,21 @@ import yaml
 class SearchTermsLoader:
     """Handles loading search terms from various file formats"""
     
+    class UnsupportedFormatError(ValueError):
+        """Raised when file format is not supported"""
+        pass
+    
+    class InvalidFormatError(ValueError):
+        """Raised when file content is invalid"""
+        pass
+    
     @staticmethod
     def load_terms(file_path: str) -> List[str]:
         """Load search terms from a file based on its extension"""
         ext = file_path.lower().split('.')[-1]
+        
+        if ext not in ('txt', 'csv', 'json', 'yml', 'yaml'):
+            raise SearchTermsLoader.UnsupportedFormatError(f"Unsupported file format: {ext}")
         
         try:
             if ext == 'txt':
@@ -20,8 +31,10 @@ class SearchTermsLoader:
                 return SearchTermsLoader._load_json(file_path)
             elif ext in ('yml', 'yaml'):
                 return SearchTermsLoader._load_yaml(file_path)
-            else:
-                raise ValueError(f"Unsupported file format: {ext}")
+        except (json.JSONDecodeError, yaml.YAMLError) as e:
+            raise SearchTermsLoader.InvalidFormatError(f"Invalid file format: {str(e)}")
+        except FileNotFoundError:
+            raise
         except Exception as e:
             raise Exception(f"Error loading terms from {file_path}: {str(e)}")
 

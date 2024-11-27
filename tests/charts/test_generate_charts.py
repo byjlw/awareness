@@ -1,9 +1,7 @@
 import os
-import sys
 import json
 import pytest
-sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-from generate_charts import (
+from awareness.charts.generate_charts import (
     load_json_files,
     generate_search_count_chart,
     generate_ranking_charts,
@@ -18,38 +16,34 @@ def sample_data_dir(tmp_path):
     
     # Create sample search results JSON
     search_data = {
-        "search_results.json": {
-            "python programming": {
-                "count": 1500000,
-                "timestamp": "2024-02-26 10:30:45"
-            },
-            "python tutorial": {
-                "count": 800000,
-                "timestamp": "2024-02-26 10:30:47"
-            }
+        "python programming": {
+            "count": 1500000,
+            "timestamp": "2024-02-26 10:30:45"
+        },
+        "python tutorial": {
+            "count": 800000,
+            "timestamp": "2024-02-26 10:30:47"
         }
     }
     
     with open(data_dir / "search_results.json", "w") as f:
-        json.dump(search_data["search_results.json"], f)
+        json.dump(search_data, f)
     
     # Create sample project rankings JSON
     ranking_data = {
-        "project_rankings.json": {
-            "python web framework": {
-                "total_results": 1234567,
-                "project_rankings": {
-                    "Django": 1,
-                    "Flask": 3,
-                    "FastAPI": 5
-                },
-                "timestamp": "2024-02-26 10:30:45"
-            }
+        "python web framework": {
+            "total_results": 1234567,
+            "project_rankings": {
+                "Django": 1,
+                "Flask": 3,
+                "FastAPI": 5
+            },
+            "timestamp": "2024-02-26 10:30:45"
         }
     }
     
     with open(data_dir / "project_rankings.json", "w") as f:
-        json.dump(ranking_data["project_rankings.json"], f)
+        json.dump(ranking_data, f)
     
     return data_dir
 
@@ -59,6 +53,12 @@ def output_dir(tmp_path):
     charts_dir = tmp_path / "charts"
     charts_dir.mkdir()
     return charts_dir
+
+def test_format_number():
+    assert format_number(1234) == "1.2 thousand"
+    assert format_number(1234567) == "1.2 million"
+    assert format_number(123) == "123"
+    assert format_number(0) == "0"
 
 def test_load_json_files(sample_data_dir):
     data = load_json_files(str(sample_data_dir))
@@ -76,12 +76,6 @@ def test_load_json_files(sample_data_dir):
     ranking_data = data["project_rankings.json"]
     assert "python web framework" in ranking_data
     assert ranking_data["python web framework"]["project_rankings"]["Django"] == 1
-
-def test_format_number():
-    assert format_number(1234) == "1.2 thousand"
-    assert format_number(1234567) == "1.2 million"
-    assert format_number(123) == "123"
-    assert format_number(0) == "0"
 
 def test_generate_search_count_chart(sample_data_dir, output_dir):
     data = load_json_files(str(sample_data_dir))

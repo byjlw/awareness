@@ -4,7 +4,7 @@ from datetime import datetime, date
 import requests
 import json
 import time
-from search_tracker import GoogleSearchTracker
+from awareness.core.search_tracker import GoogleSearchTracker
 
 class ProjectRankTracker(GoogleSearchTracker):
     def __init__(self, api_key: str, search_engine_id: str, projects: List[str]):
@@ -52,7 +52,7 @@ class ProjectRankTracker(GoogleSearchTracker):
         return {
             'items': all_items,
             'searchInformation': {
-                'totalResults': total_results
+                'totalResults': str(total_results)
             }
         }
 
